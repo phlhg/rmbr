@@ -13,6 +13,7 @@ class Extension {
 
         this.videos = [];
         this.storage = new RmbrStorage();
+
         this.storage.init(() => {
 
             let elements: NodeListOf<HTMLVideoElement> = document.querySelectorAll("video");
@@ -22,6 +23,8 @@ class Extension {
             }
 
         });
+
+
     }
 
     static getIdentifier(element: HTMLElement){
@@ -68,8 +71,8 @@ class Video {
                 this.storage.set(this.identifier,this.element.currentTime);
             }
         })
-
-        console.log("try");
+        
+        
         if(this.storage.hasUrl(this.identifier)){
             console.log("set to "+this.storage.get(this.identifier));
             this.element.currentTime = this.storage.get(this.identifier);
@@ -89,7 +92,6 @@ class RmbrStorage {
     init(callback: Function){
         browser.storage.local.get().then(data => {
             this.data = data;
-            //console.log(data);
             callback();
         }, error => {
             console.log(error);
