@@ -37,7 +37,7 @@ class Extension {
 
     static getXPath(element: HTMLElement): String {
         if(element.parentElement != undefined){
-            return this.getXPath(element.parentElement) + "/" + element.tagName;
+            return this.getXPath(element.parentElement) + "/" + element.tagName + "[" + (element.id ? element.id : Array.from(element.classList).join()) + "]";
         } else {
             return "";
         }
@@ -74,10 +74,41 @@ class Video {
         
         
         if(this.storage.hasUrl(this.identifier)){
+            new Message(this.element,"Recovered you progress 😉");
+            console.log(this.element);
             console.log("set to "+this.storage.get(this.identifier));
             this.element.currentTime = this.storage.get(this.identifier);
         }
     
+    }
+
+}
+
+class Message {
+
+    anchor: HTMLVideoElement;
+    root: HTMLElement;
+    message: string;
+
+    constructor(anchor: HTMLVideoElement, message: string){
+        this.anchor = anchor;
+        this.message = message;
+        this.root = document.createElement("div");
+        this.root.classList.add("rmbrMessage");
+        this.root.innerText = this.message;
+        this.root.style.top = this.anchor.getBoundingClientRect().top+"px";
+        this.root.style.left = this.anchor.getBoundingClientRect().left+"px";
+        document.body.appendChild(this.root);
+
+        setTimeout(() => {
+            this.root.classList.add("show");
+        },200)
+
+        this.anchor.onplay = () => {
+            this.root.classList.remove("show");
+            this.anchor.onplay = () => {};
+        }
+
     }
 
 }

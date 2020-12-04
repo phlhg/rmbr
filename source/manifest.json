@@ -18,6 +18,7 @@
       {
         "matches": ["*://*/*"],
         "js": ["content.js"],
+        "css": ["style.css"],
         "all_frames": true
       }
     ],
