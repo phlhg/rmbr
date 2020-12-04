@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "typescript",
+			"tsconfig": "tsconfig.json",
+			"problemMatcher": [ "$tsc" ],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "rmbr: build",
+			"presentation": {
+				"echo": false,
+				"reveal": "silent",
+				"focus": false,
+				"showReuseMessage": false,
+				"clear": false
+			}
+		}
+	]
+}

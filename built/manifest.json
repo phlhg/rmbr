@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "author": "Philippe Hugo",
+    "name": "rmbr",
+    "version": "1.0",
+    "description": "Remembers you progress on videos all over the web, so you can take up where you left.",
+    "homepage_url": "https://phlhg.ch/projects/14/rmbr-browser-extension/",
+  
+    "icons": {
+      "48": "icons/48.png"
+    },
+
+    "permissions": [
+        "storage"
+    ],
+  
+    "content_scripts": [
+      {
+        "matches": ["*://*/*"],
+        "js": ["rmbr.js"],
+        "all_frames": true
+      }
+    ],
+
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "rmbr@phlhg.ch",
+          "strict_min_version": "42.0"
+        }
+    }
+}

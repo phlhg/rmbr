@@ -1,0 +1,16 @@
+{
+  "name": "rmbr",
+  "version": "1.0.0",
+  "description": "Remembers you progress on videos all over the web, so you can take up where you left.",
+  "main": "rmbr.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phlhg/rmbr.git"
+  },
+  "author": "Philippe Hugo",
+  "license": "ISC",
+  "homepage": "https://github.com/phlhg/rmbr",
+  "dependencies": {
+    "typescript": "^4.1.2"
+  }
+}
