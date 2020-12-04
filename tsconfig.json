@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-      "outDir": "built/",
+      "outDir": "build/",
       "allowJs": true,
       "target": "es5",
-      "rootDir": "./source/"
+      "rootDir": "./source/",
+      "removeComments": true
   },
   "include": ["source/**/*"]
 }
