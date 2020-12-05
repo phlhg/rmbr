@@ -4,7 +4,7 @@ declare const browser: any;
 /**
  * Main class
  */
-class Extension {
+class Page {
 
     videos: Array<Video>;
     storage: RmbrStorage;
@@ -63,7 +63,7 @@ class Video {
 
         this.storage = storage;
         this.element = element;
-        this.identifier = Extension.getIdentifier(this.element);
+        this.identifier = Page.getIdentifier(this.element);
 
         this.element.addEventListener("timeupdate",() => {
             // Prevent indexing of short videos
@@ -161,4 +161,4 @@ class RmbrStorage {
 
 }
 
-new Extension();
+new Page();
