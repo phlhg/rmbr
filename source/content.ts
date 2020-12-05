@@ -74,12 +74,21 @@ class Video {
         
         
         if(this.storage.hasUrl(this.identifier)){
-            new Message(this.element,"Recovered you progress 😉");
+            new Message(this.element,"Continue at "+this.progressToText(this.storage.get(this.identifier)));
             console.log(this.element);
             console.log("set to "+this.storage.get(this.identifier));
             this.element.currentTime = this.storage.get(this.identifier);
         }
     
+    }
+
+    progressToText(time: number) : string {
+        let d : Date = new Date(time*1000);
+        return this.dd(d.getHours()-1) + ":" + this.dd(d.getMinutes()) + ":" + this.dd(d.getSeconds());
+    }
+
+    dd(n: number): string {
+        return ""+ (n < 10 ? "0"+n : n);
     }
 
 }
@@ -97,7 +106,7 @@ class Message {
         this.root.classList.add("rmbrMessage");
         this.root.innerText = this.message;
         this.root.style.top = this.anchor.getBoundingClientRect().top+"px";
-        this.root.style.left = this.anchor.getBoundingClientRect().left+"px";
+        this.root.style.right = (this.anchor.getBoundingClientRect().right-this.anchor.getBoundingClientRect().width)+"px";
         document.body.appendChild(this.root);
 
         setTimeout(() => {
@@ -105,8 +114,10 @@ class Message {
         },200)
 
         this.anchor.onplay = () => {
-            this.root.classList.remove("show");
-            this.anchor.onplay = () => {};
+            setTimeout(() => {
+                this.root.classList.remove("show");
+                this.anchor.onplay = () => {};
+            },5000);
         }
 
     }

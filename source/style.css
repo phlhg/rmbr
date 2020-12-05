@@ -4,14 +4,18 @@
 
 .rmbrMessage {
     position: fixed;
-    top: 0; left: 0;
-    padding: 5px 10px;
-    background: #111;
+    top: 0; right: 0;
+    padding: 5px 10px 5px 30px;
+    background: rgba(0,0,0,0.8);
+    background-image: url(icons/48_white.png);
+    background-size: 16px;
+    background-position: 7px 5px;
+    background-repeat: no-repeat;
     color: #fff;
     border-radius: 4px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 12px;
-    margin: 10px 0 0 10px;
+    margin: 10px 10px 0 0;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     transform: translateY(-10px);
     opacity: 0;
