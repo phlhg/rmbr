@@ -11,16 +11,26 @@
     },
 
     "permissions": [
-        "storage"
+        "storage",
+        "tabs"
     ],
+
+    "background":{
+      "scripts": ["background/main.js"]
+    },
   
     "content_scripts": [
       {
         "matches": ["*://*/*"],
-        "js": ["content.js"],
-        "css": ["style.css"],
+        "js": ["content/main.js"],
+        "css": ["content/style.css"],
         "all_frames": true
       }
+    ],
+
+    "web_accessible_resources": [
+      "icons/48_white.png",
+      "icons/48.png"
     ],
 
     "browser_specific_settings": {
