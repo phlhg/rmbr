@@ -105,22 +105,37 @@ class Message {
         this.root = document.createElement("div");
         this.root.classList.add("rmbrMessage");
         this.root.innerText = this.message;
-        this.root.style.top = this.anchor.getBoundingClientRect().top+"px";
-        this.root.style.right = (this.anchor.getBoundingClientRect().right-this.anchor.getBoundingClientRect().width)+"px";
         this.root.style.backgroundImage = 'url('+browser.extension.getURL('icons/48_white.png')+')';
         document.body.appendChild(this.root);
 
-        setTimeout(() => {
-            this.root.classList.add("show");
-        },200)
+        setTimeout(this.show.bind(this),200)
 
         this.anchor.onplay = () => {
-            setTimeout(() => {
-                this.root.classList.remove("show");
-                this.anchor.onplay = () => {};
-            },5000);
+            setTimeout(this.hide.bind(this),3000);
         }
 
+        window.addEventListener("scroll",this.reposition.bind(this));
+    }
+
+    reposition(){
+        let bcr = this.anchor.parentElement.getBoundingClientRect();
+        this.root.style.top = bcr.top+"px";
+        this.root.style.left = bcr.left+"px";
+    }
+
+    show(){
+        this.reposition();
+        this.root.classList.add("show");
+    }
+
+    hide(){
+        this.root.classList.remove("show");
+        this.anchor.onplay = () => {};
+        setTimeout(this.remove.bind(this),400);
+    }
+
+    remove(){
+        this.root.remove();
     }
 
 }

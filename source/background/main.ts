@@ -218,12 +218,14 @@ var ext: Extension = new Extension();
 
 class Hash {
 
+    //From https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+
     static fromString(value: String): number{
         var hash = 0, i, chr;
         for (i = 0; i < value.length; i++) {
             chr   = value.charCodeAt(i);
             hash  = ((hash << 5) - hash) + chr;
-            hash |= 0; // Convert to 32bit integer
+            hash |= 0;
         }
         return hash;
     }
