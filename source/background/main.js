@@ -1,12 +1,4 @@
-/** Imitate browser variable for addons */
-declare const browser: any;
-
 class Extension {
-
-    messanger: ExtensionMessanger;
-    storage: ExtensionStorage;
-
-    movieCollection: MovieCollection;
 
     constructor(){
 
@@ -20,7 +12,7 @@ class Extension {
 
     }
 
-    setEvents(): void {
+    setEvents() {
 
         this.messanger.setHandler("getVideo",(data,sender) => {
 
@@ -33,7 +25,7 @@ class Extension {
 
         this.messanger.setHandler("updateVideo",(data,sender) => {
 
-            let m: Movie = this.movieCollection.get(Movie.id(sender.tab.url,data.id));
+            let m = this.movieCollection.get(Movie.id(sender.tab.url,data.id));
 
             if(m == undefined){
                 m = new Movie(Movie.id(sender.tab.url,data.id), 0, sender.tab.url, sender.tab.title);
@@ -51,9 +43,7 @@ class Extension {
 
 class Storable {
 
-    storage: ExtensionStorage;
-
-    constructor(storage: ExtensionStorage){
+    constructor(storage){
         this.storage = storage;
     }
 
@@ -63,27 +53,30 @@ class Storable {
 
     toStorableObject(){ return {} }
 
-    restoreFromObject(data: any){  }
+    restoreFromObject(data){  }
 
 }
 
 class MovieCollection extends Storable {
 
-    collection: Array<Movie> = [];
+    constructor(storage){
+        super(storage);
+        this.collection = [];
+    }
 
-    get(id: number){
+    get(id){
         return this.collection.find(m => {
             return m.id == id;
         });
     }
 
-    add(m: Movie){
+    add(m){
         this.collection.push(m);
         this.update();
         return m;
     }
 
-    fromObject(data: any){
+    fromObject(data){
         this.collection = [];
         data.forEach(m => {
             this.collection.push(Movie.fromObject(m));
@@ -98,11 +91,6 @@ class MovieCollection extends Storable {
 
 class Movie {
 
-    id: number;
-    url: string;
-    name: string;
-    progress: number;
-
     constructor(id, progress, url, name){
         this.id = id;
         this.progress = progress;
@@ -110,11 +98,11 @@ class Movie {
         this.name = name;
     }
 
-    static id(url,xpath): number{
+    static id(url,xpath) {
         return Hash.fromString(url+"@"+xpath);
     }
 
-    updateProgress(progress: number){
+    updateProgress(progress){
         this.progress = progress;
     }
 
@@ -127,7 +115,7 @@ class Movie {
         }
     }
 
-    static fromObject(data: any){
+    static fromObject(data){
         return new this(
             data.id,
             data.progress,
@@ -140,9 +128,11 @@ class Movie {
 
 class ExtensionStorage {
 
-    partitions: Object = {};
+    constructor(){
+        this.partitions = {};
+    }
 
-    load(callback: Function): void {
+    load(callback) {
         browser.storage.local.get().then(data => {
             this.restore(data);
             callback();
@@ -153,12 +143,12 @@ class ExtensionStorage {
     }
     
     
-    setPartition(name: string, c: any){
+    setPartition(name, c){
         this.partitions[name] = c;
         return c;
     }
 
-    restore(data: any): void {
+    restore(data) {
         for(let name in data){
             if(this.partitions.hasOwnProperty(name)){
                 this.partitions[name].fromObject(data[name]);
@@ -166,8 +156,8 @@ class ExtensionStorage {
         }
     }
 
-    store(): void {
-        let data: object = {};
+    store() {
+        let data = {};
         for(let name in this.partitions){
             data[name] = this.partitions[name].toObject();
         }
@@ -178,21 +168,22 @@ class ExtensionStorage {
 
 class ExtensionMessanger {
 
-    handlers: Object = {};
-    defaultHandler: Function = (data,sender) => { console.log(data); };
-
     constructor(){
+
+        this.handlers = {};
+        this.defaultHandler = (data,sender) => { console.log(data); };
+
         browser.runtime.onMessage.addListener(this.receive.bind(this));
     }
 
-    send(type: string, message: any, target: any){
+    send(type, message, target){
         browser.tabs.sendMessage( target.tab.id, { 
             "type": type, 
             "data": message 
         },{ frameId: target.frameId });
     }
 
-    receive(message: any, sender: any){
+    receive(message, sender){
         if(message.hasOwnProperty("type") && message.hasOwnProperty("data")){
             if(this.handlers.hasOwnProperty(message.type)){
                 this.handlers[message.type](message.data,sender);
@@ -204,23 +195,21 @@ class ExtensionMessanger {
         }
     }
 
-    setHandler(type: string, handler: Function){
+    setHandler(type, handler){
         this.handlers[type] = handler;
     }
 
-    setDefaultHandler(handler: Function){
+    setDefaultHandler(handler){
         this.defaultHandler = handler;
     }
 
 }
 
-var ext: Extension = new Extension();
-
 class Hash {
 
     //From https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
 
-    static fromString(value: String): number{
+    static fromString(value) {
         var hash = 0, i, chr;
         for (i = 0; i < value.length; i++) {
             chr   = value.charCodeAt(i);
@@ -231,3 +220,5 @@ class Hash {
     }
 
 }
+
+var ext = new Extension();

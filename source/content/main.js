@@ -1,15 +1,13 @@
 class Content {
 
-    messanger: ContentMessanger;
-    videos: Object = {};
-
     constructor(){
 
+        this.videos = {};
         this.messanger = new ContentMessanger();
 
         this.messanger.setHandler("getVideo",(data) => {
-            let id: string = data.id;
-            let video: any = data.video;
+            let id = data.id;
+            let video = data.video;
 
             console.log(video);
 
@@ -19,20 +17,20 @@ class Content {
 
         })
         
-        let elements: NodeListOf<HTMLVideoElement> = document.querySelectorAll("video");
+        let elements = document.querySelectorAll("video");
 
         for(let i = 0; i < elements.length; i++){
-            let v: Video = new Video(this,elements[i]);
+            let v = new Video(this,elements[i]);
             this.videos[v.identifier] = v;
         }
 
     }
 
-    static getIdentifier(element: HTMLElement): string {
+    static getIdentifier(element) {
         return this.getXPath(element);
     }
 
-    static getXPath(element: HTMLElement): string {
+    static getXPath(element) {
         if(element.parentElement != undefined){
             return this.getXPath(element.parentElement) + "/" + element.tagName + "[" + (element.id ? element.id : Array.from(element.classList).join()) + "]";
         } else {
@@ -44,12 +42,8 @@ class Content {
 
 
 class Video {
-
-    content: Content;
-    element: HTMLVideoElement;
-    identifier: string;
     
-    constructor(content: Content, element: HTMLVideoElement){
+    constructor(content, element){
 
         this.content = content;
         this.element = element;
@@ -75,16 +69,16 @@ class Video {
         });
     }
 
-    progressToText(progress: number): string {
-        let d : Date = new Date(progress*1000);
+    progressToText(progress) {
+        let d = new Date(progress*1000);
         return this.dd(d.getHours()-1) + ":" + this.dd(d.getMinutes()) + ":" + this.dd(d.getSeconds());
     }
 
-    dd(n: number): string {
+    dd(n) {
         return ""+ (n < 10 ? "0"+n : n);
     }
 
-    setProgress(progress: number){
+    setProgress(progress){
         new Message(this.element,"Continue at "+this.progressToText(progress));
         console.log(this.element);
         console.log("set to "+progress);
@@ -95,11 +89,7 @@ class Video {
 
 class Message {
 
-    anchor: HTMLVideoElement;
-    root: HTMLElement;
-    message: string;
-
-    constructor(anchor: HTMLVideoElement, message: string){
+    constructor(anchor, message){
         this.anchor = anchor;
         this.message = message;
         this.root = document.createElement("div");
@@ -142,21 +132,20 @@ class Message {
 
 class ContentMessanger {
 
-    handlers: Object = {};
-    defaultHandler: Function = (data,sender) => { console.log(data); };
-
     constructor(){
+        this.handlers = {}
+        this.defaultHandler = (data,sender) => { console.log(data); };
         browser.runtime.onMessage.addListener(this.receive.bind(this));
     }
 
-    send(type: string, message: any){
+    send(type, message){
         browser.runtime.sendMessage({ 
             "type": type, 
             "data": message 
         });
     }
 
-    receive(message: any){
+    receive(message){
         if(message.hasOwnProperty("type") && message.hasOwnProperty("data")){
             if(this.handlers.hasOwnProperty(message.type)){
                 this.handlers[message.type](message.data);
@@ -168,11 +157,11 @@ class ContentMessanger {
         }
     }
 
-    setHandler(type: string, handler: Function){
+    setHandler(type, handler){
         this.handlers[type] = handler;
     }
 
-    setDefaultHandler(handler: Function){
+    setDefaultHandler(handler){
         this.defaultHandler = handler;
     }
 
