@@ -9,10 +9,10 @@ class Content {
             let id = data.id;
             let video = data.video;
 
-            console.log(video);
-
-            if(video != undefined && this.videos.hasOwnProperty(id)){
-                this.videos[id].setProgress(video.progress);
+            if(this.videos.hasOwnProperty(id)){
+                if(video != undefined){
+                    this.videos[id].setProgress(video.progress);
+                }
             }
 
         })
@@ -47,10 +47,11 @@ class Video {
 
         this.content = content;
         this.element = element;
+        this.track = false;
         this.identifier = Content.getIdentifier(this.element);
 
         this.element.addEventListener("timeupdate",() => {
-            if(this.element.duration > 4*60){
+            if(this.track){
                 this.updateProgress(this.element.currentTime);
             }
         })
@@ -58,6 +59,12 @@ class Video {
         this.content.messanger.send("getVideo",{
             "id": this.identifier
         });
+
+        this.element.addEventListener("canplaythrough", () => {
+            if(this.element.duration > 4 * 60){
+                this.track = true;
+            }
+        })
     
     }
 
@@ -79,10 +86,13 @@ class Video {
     }
 
     setProgress(progress){
-        new Message(this.element,"Continue at "+this.progressToText(progress));
-        console.log(this.element);
-        console.log("set to "+progress);
         this.element.currentTime = progress;
+        var msg = new Message(this.element,"Continue at "+this.progressToText(this.element.currentTime));
+        this.element.onplay = () => {
+            setTimeout(() => { msg.hide(); },2000);
+            this.element.onplay = () => {}
+        }
+        msg.show();
     }
 
 }
@@ -91,42 +101,60 @@ class Message {
 
     constructor(anchor, message){
         this.anchor = anchor;
-        this.message = message;
-        this.root = document.createElement("div");
-        this.root.classList.add("rmbrMessage");
-        this.root.innerText = this.message;
-        this.root.style.backgroundImage = 'url('+browser.extension.getURL('icons/48_white.png')+')';
-        document.body.appendChild(this.root);
 
-        setTimeout(this.show.bind(this),200)
+        this.dom = {}
 
-        this.anchor.onplay = () => {
-            setTimeout(this.hide.bind(this),3000);
-        }
+        this.dom.root = document.createElement("div");
+        this.dom.text = document.createElement("span");
+        this.dom.button = document.createElement("div");
 
+        this.dom.root.classList.add("rmbrMessage");
+        this.dom.root.style.backgroundImage = 'url('+browser.extension.getURL('icons/48_white.png')+')';
+
+        this.dom.root.appendChild(this.dom.text);
+        this.dom.root.appendChild(this.dom.button);
+
+        this.dom.text.innerText = message;
+        this.dom.button.classList.add("button");
+
+        document.body.appendChild(this.dom.root);
         window.addEventListener("scroll",this.reposition.bind(this));
+    }
+
+    setMessage(message){
+        this.dom.text.innerText = message;
+    }
+
+    setAction(name, callback){
+        this.dom.root.classList.add("action");
+        this.dom.button.innerText = name;
+        this.dom.button.onclick = () => {
+            callback(this);
+        }
     }
 
     reposition(){
         let bcr = this.anchor.parentElement.getBoundingClientRect();
-        this.root.style.top = bcr.top+"px";
-        this.root.style.left = bcr.left+"px";
+        this.dom.root.style.top = bcr.top+"px";
+        this.dom.root.style.left = bcr.left+"px";
     }
 
     show(){
         this.reposition();
-        this.root.classList.add("show");
+        setTimeout(() => {
+            this.dom.root.classList.add("show");
+        }, 200);
     }
 
     hide(){
-        this.root.classList.remove("show");
-        this.anchor.onplay = () => {};
+        this.dom.root.classList.remove("show");
         setTimeout(this.remove.bind(this),400);
     }
 
     remove(){
-        this.root.remove();
+        this.dom.root.remove();
     }
+
 
 }
 
